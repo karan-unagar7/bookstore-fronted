@@ -1,0 +1,13 @@
+.bg-img{
+    background-image: url(https://images.alphacoders.com/132/thumb-1920-1326370.png);
+    width: 100vw;
+    height: 90vh;
+    opacity: 0.5;
+    position: relative;
+}
+
+.fix-text{
+    position: absolute;
+    top: 395px;
+    left: 617px;
+}
