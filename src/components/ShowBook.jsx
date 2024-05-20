@@ -80,6 +80,7 @@ const ShowBooks = () => {
     setModal2(true);
     setIsBookName(true);
   };
+
   const handleDeleteByDescAndAuthor = () => {
     setModal2(true);
     setIsDescAndAuthor(true);
@@ -123,17 +124,17 @@ const ShowBooks = () => {
       });
       toast.success(response.data.message);
       setFormData(response.data.Book);
-      setBookName("");
-      setAuthorName("");
       setShowForm(true);
-      setModal1(false);
-      setIsBookName(false);
-      setIsNameAndAuthor(false);
     } catch (error) {
       console.log(error.message);
       toast.error(error.response.data.message);
     } finally {
       setModal1(false);
+      setBookName("")
+      setAuthorName("");
+      setModal1(false);
+      setIsBookName(false);
+      setIsNameAndAuthor(false);
     }
   };
 
@@ -166,6 +167,11 @@ const ShowBooks = () => {
       console.log(error);
     } finally {
       setModal2(false);
+      setBookId("")
+      setBookName("")
+      setBookDesc("")
+      setAuthorName("")
+      setCategory("")
     }
   };
 
