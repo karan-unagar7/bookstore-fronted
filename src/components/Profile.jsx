@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 // eslint-disable-next-line react/prop-types
 function Profile({ isOpen, onClose }) {
   const [user, setUser] = useState(null);
+
   useEffect(() => {
-    try {
-      if (isOpen) {
-        const fetchProfileData = async () => {
+    const fetchProfileData = async () => {
+      try {
+        if (isOpen) {
           const response = await axios.get(
             "http://localhost:3001/api/v1/user/getuser",
             {
@@ -17,20 +18,21 @@ function Profile({ isOpen, onClose }) {
             }
           );
           setUser(response.data.data);
-        };
-        fetchProfileData();
+        }
+      } catch (error) {
+        console.log("Error fetching user data:", error);
       }
-    } catch (error) {
-      console.log("Error fetching user data:", error);
-    }
+    };
+    fetchProfileData();
   }, [isOpen]);
+
   return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center ${
         isOpen ? "" : "hidden"
-      }`}
+      } bg-black bg-opacity-50`}
     >
-      <div className="bg-white rounded-lg shadow-lg p-6 max-w-md">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg h-auto">
         <div className="flex justify-end">
           <button
             className="text-gray-500 hover:text-gray-700"
@@ -53,29 +55,25 @@ function Profile({ isOpen, onClose }) {
           </button>
         </div>
         {user ? (
-          
           <div>
-            <h2 className="text-xl font-bold mb-4">Profile</h2>
-            <div className="flex items-center mb-4">
+            <h2 className="text-2xl font-bold mb-4 text-center">Profile</h2>
+            <div className="flex flex-col items-center mb-4">
               <img
                 src={user.image}
                 alt="Profile"
-                className="w-10 h-10 rounded-full object-cover mr-4"
+                className="w-24 h-24 rounded-full object-cover mb-4 shadow-md border-2 border-gray-200"
               />
-              <div>
-                <p className="text-xl">
-                  <span className="font-bold">Name:</span>{" "}
-                  {user.name}
+              <div className="text-center">
+                <p className="text-xl mb-2">
+                  <span className="font-bold">Name:</span> {user.name}
                 </p>
-                <hr />
-                <p className="text-xl">
-                  <span className="font-bold">Email:</span>{" "}
-                  {user.email}
+                <hr className="border-t border-gray-300 my-2" />
+                <p className="text-xl mb-2">
+                  <span className="font-bold">Email:</span> {user.email}
                 </p>
-                <hr />
-                <p className="text-xl">
-                  <span className="font-bold">Gender:</span>{" "}
-                  {user.gender}
+                <hr className="border-t border-gray-300 my-2" />
+                <p className="text-xl mb-2">
+                  <span className="font-bold">Gender:</span> {user.gender}
                 </p>
               </div>
             </div>
