@@ -31,12 +31,16 @@ const ShowBooks = () => {
 
   const [order, setOrder] = useState(true);
 
+  const [currentPage,setCurrentPage] = useState(1);
+  const [totalPages,setTotalPages] = useState(1);
+  const limit = 5;
+
   useEffect(() => {
     setTimeout(() => {
       const fetchBooks = async () => {
         try {
           const response = await axios.get(
-            "http://localhost:3001/api/v1/book/getall",
+            `http://localhost:3001/api/v1/book/getall?page=${currentPage}&limit=${limit}`,
             {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -44,6 +48,7 @@ const ShowBooks = () => {
             }
           );
           setBooks(response.data.AllBook);
+          setTotalPages(Math.ceil(response.data.totalBooks / limit));
         } catch (err) {
           setError(err.message);
         } finally {
@@ -51,8 +56,12 @@ const ShowBooks = () => {
         }
       };
       fetchBooks();
-    }, 2000);
-  }, []);
+    }, 500);
+  }, [currentPage]);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   const handleUpdateByNameAndAuthor = () => {
     setModal1(true);
@@ -209,6 +218,8 @@ const ShowBooks = () => {
     } catch (error) {
       // console.log(error.response.data.message);
       setBooks([]);
+      setIsShowBookId(false);
+      setIsBookName(false);
       toast.error(error.response.data.message);
     } finally {
       setLoading(false);
@@ -583,6 +594,33 @@ const ShowBooks = () => {
             )}
           </tbody>
         </table>
+      </div>
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
+        >
+          Previous
+        </button>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => handlePageChange(index + 1)}
+            className={`bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 ${
+              currentPage === index + 1 ? "bg-gray-500" : ""
+            }`}
+          >
+            {index + 1}
+          </button>
+        ))}
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r"
+        >
+          Next
+        </button>
       </div>
       {modal1 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
