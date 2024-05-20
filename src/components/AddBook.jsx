@@ -2,8 +2,10 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
+import {useNavigate} from "react-router-dom"
 
 const AddBook = () => {
+  const navigate = useNavigate()
   const initialValues = {
     name: "",
     description: "",
@@ -39,11 +41,12 @@ const AddBook = () => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
       );
       console.log(response.data);
       toast.success(response.data.message);
       resetForm();
+      setTimeout(() => navigate("/showbook"), 500);
     } catch (error) {
       toast.error(error.response.data.message);
       console.error(error);
