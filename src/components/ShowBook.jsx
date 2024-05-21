@@ -31,11 +31,12 @@ const ShowBooks = () => {
 
   const [order, setOrder] = useState(true);
 
-  const [currentPage,setCurrentPage] = useState(1);
-  const [totalPages,setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const limit = 5;
 
   useEffect(() => {
+    console.log("Hello");
     setTimeout(() => {
       const fetchBooks = async () => {
         try {
@@ -110,10 +111,11 @@ const ShowBooks = () => {
   const handleUpdateSubmit = async (e) => {
     try {
       let url = "";
+
       if (bookName && !authorName) {
-        url = `http://localhost:3001/api/v1/book/getOne?bookName=${bookName}`;
+        url = `http://localhost:3001/api/v1/book/getOne?bookName=${bookName}&page=${currentPage}&limit=${limit}`;
       } else if (bookName && authorName) {
-        url = `http://localhost:3001/api/v1/book/getOne?bookName=${bookName}&authorName=${authorName}`;
+        url = `http://localhost:3001/api/v1/book/getOne?bookName=${bookName}&authorName=${authorName}&page=${currentPage}&limit=${limit}`;
       }
       console.log(url);
       e.preventDefault();
@@ -130,7 +132,7 @@ const ShowBooks = () => {
       toast.error(error.response.data.message);
     } finally {
       setModal1(false);
-      setBookName("")
+      setBookName("");
       setAuthorName("");
       setModal1(false);
       setIsBookName(false);
@@ -158,20 +160,21 @@ const ShowBooks = () => {
       });
       toast.success(response.data.message);
       setModal2(false);
-      setIsBookName(false);
-      setIsBookNameAndCategory(false);
-      setIsDescAndAuthor(false);
+
       setTimeout(() => window.location.reload(), 500);
     } catch (error) {
       toast.error(error.response.data.message);
       console.log(error);
     } finally {
+      setIsBookName(false);
+      setIsBookNameAndCategory(false);
+      setIsDescAndAuthor(false);
       setModal2(false);
-      setBookId("")
-      setBookName("")
-      setBookDesc("")
-      setAuthorName("")
-      setCategory("")
+      setBookId("");
+      setBookName("");
+      setBookDesc("");
+      setAuthorName("");
+      setCategory("");
     }
   };
 
@@ -198,15 +201,14 @@ const ShowBooks = () => {
     e.preventDefault();
     let url = "";
     if (bookId) {
-      url = `http://localhost:3001/api/v1/book/getAll?bookId=${bookId}`;
+      url = `http://localhost:3001/api/v1/book/getAll?bookId=${bookId}&page=${currentPage}&limit=${limit}`;
     } else if (bookName && authorName) {
-      url = `http://localhost:3001/api/v1/book/getAll?bookName=${bookName}&authorName=${authorName}`;
+      url = `http://localhost:3001/api/v1/book/getAll?bookName=${bookName}&authorName=${authorName}&page=${currentPage}&limit=${limit}`;
     } else if (bookName && !authorName) {
-      url = `http://localhost:3001/api/v1/book/getAll?bookName=${bookName}`;
+      url = `http://localhost:3001/api/v1/book/getAll?bookName=${bookName}&page=${currentPage}&limit=${limit}`;
     } else {
-      url = `http://localhost:3001/api/v1/book/getAll`;
+      url = `http://localhost:3001/api/v1/book/getAll?page=${currentPage}&limit=${limit}`;
     }
-    console.log(url);
     try {
       const response = await axios.get(url, {
         headers: {
@@ -214,6 +216,7 @@ const ShowBooks = () => {
         },
       });
       setBooks(response.data.AllBook);
+      setTotalPages(Math.ceil(response.data.totalBooks / limit));
       setModal3(false);
       setBookId("");
       setBookName("");
@@ -251,7 +254,7 @@ const ShowBooks = () => {
     e.preventDefault();
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/v1/book/getAll?pages_gt=100`,
+        `http://localhost:3001/api/v1/book/getAll?pages_gt=100&page=${currentPage}&limit=${limit}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -259,6 +262,7 @@ const ShowBooks = () => {
         }
       );
       setBooks(response.data.AllBook);
+      setTotalPages(Math.ceil(response.data.totalBooks / limit));
       toast.success(response.data.message);
     } catch (error) {
       setBooks([]);
@@ -272,7 +276,7 @@ const ShowBooks = () => {
     e.preventDefault();
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/v1/book/getAll?pages_lt=90&pages_gt=25`,
+        `http://localhost:3001/api/v1/book/getAll?pages_lt=90&pages_gt=25&page=${currentPage}&limit=${limit}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -280,6 +284,7 @@ const ShowBooks = () => {
         }
       );
       setBooks(response.data.AllBook);
+      setTotalPages(Math.ceil(response.data.totalBooks / limit));
       toast.success(response.data.message);
     } catch (error) {
       setBooks([]);
@@ -293,7 +298,7 @@ const ShowBooks = () => {
     e.preventDefault();
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/v1/book/getAll?pages_lt=90&pages_gt=25&pages_ne=80`,
+        `http://localhost:3001/api/v1/book/getAll?pages_lt=90&pages_gt=25&pages_ne=80&page=${currentPage}&limit=${limit}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -301,6 +306,7 @@ const ShowBooks = () => {
         }
       );
       setBooks(response.data.AllBook);
+      setTotalPages(Math.ceil(response.data.totalBooks / limit));
       toast.success(response.data.message);
     } catch (error) {
       setBooks([]);
@@ -314,7 +320,7 @@ const ShowBooks = () => {
     e.preventDefault();
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/v1/book/getAll?pages_eq=0`,
+        `http://localhost:3001/api/v1/book/getAll?pages_eq=0&page=${currentPage}&limit=${limit}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -322,6 +328,7 @@ const ShowBooks = () => {
         }
       );
       setBooks(response.data.AllBook);
+      setTotalPages(Math.ceil(response.data.totalBooks / limit));
       toast.success(response.data.message);
     } catch (error) {
       setBooks([]);
@@ -335,7 +342,7 @@ const ShowBooks = () => {
     e.preventDefault();
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/v1/book/getAll?rel_year1=2001&rel_year2=2015`,
+        `http://localhost:3001/api/v1/book/getAll?rel_year1=2001&rel_year2=2015&page=${currentPage}&limit=${limit}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -343,6 +350,7 @@ const ShowBooks = () => {
         }
       );
       setBooks(response.data.AllBook);
+      setTotalPages(Math.ceil(response.data.totalBooks / limit));
       toast.success(response.data.message);
     } catch (error) {
       setBooks([]);
@@ -355,7 +363,7 @@ const ShowBooks = () => {
   const handleSorting = async (sortFeild) => {
     try {
       const response = await axios.get(
-        `http://localhost:3001/api/v1/book/getAll?order=${order}&sort=${sortFeild}`,
+        `http://localhost:3001/api/v1/book/getAll?order=${order}&sort=${sortFeild}&page=${currentPage}&limit=${limit}`,
 
         {
           headers: {
@@ -364,6 +372,7 @@ const ShowBooks = () => {
         }
       );
       setBooks(response.data.AllBook);
+      setTotalPages(Math.ceil(response.data.totalBooks / limit));
       toast.success(
         `${order ? "Ascending" : "Descending"} order by ${sortFeild}`
       );
@@ -601,33 +610,35 @@ const ShowBooks = () => {
           </tbody>
         </table>
       </div>
-      <div className="flex justify-center mt-4">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
-        >
-          Previous
-        </button>
-        {Array.from({ length: totalPages }, (_, index) => (
+      {books.length > 0 ? (
+        <div className="flex justify-center mt-4">
           <button
-            key={index + 1}
-            onClick={() => handlePageChange(index + 1)}
-            className={`bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 ${
-              currentPage === index + 1 ? "bg-gray-500" : ""
-            }`}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l"
           >
-            {index + 1}
+            Previous
           </button>
-        ))}
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r"
-        >
-          Next
-        </button>
-      </div>
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={`bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 ${
+                currentPage === index + 1 ? "bg-gray-500" : ""
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r"
+          >
+            Next
+          </button>
+        </div>
+      ) : null}
       {modal1 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="bg-white rounded-lg shadow-lg p-6">
@@ -669,6 +680,7 @@ const ShowBooks = () => {
                   type="text"
                   placeholder="Enter Book Name"
                   value={bookName}
+                  required
                   onChange={(e) => setBookName(e.target.value)}
                 />
               </div>
@@ -685,6 +697,7 @@ const ShowBooks = () => {
                     id="name"
                     type="text"
                     placeholder="Enter Author Name"
+                    required
                     value={authorName}
                     onChange={(e) => setAuthorName(e.target.value)}
                   />
@@ -748,6 +761,7 @@ const ShowBooks = () => {
                     id="name"
                     type="text"
                     placeholder="Enter Book Name"
+                    required
                     value={bookName}
                     onChange={(e) => setBookName(e.target.value)}
                   />
@@ -804,6 +818,7 @@ const ShowBooks = () => {
                     id="name"
                     type="text"
                     placeholder="Enter Book Description"
+                    required
                     value={bookDesc}
                     onChange={(e) => setBookDesc(e.target.value)}
                   />
@@ -820,6 +835,7 @@ const ShowBooks = () => {
                     id="name"
                     type="text"
                     placeholder="Enter Book Author Name"
+                    required
                     value={authorName}
                     onChange={(e) => setAuthorName(e.target.value)}
                   />
@@ -876,6 +892,7 @@ const ShowBooks = () => {
                     id="name"
                     type="text"
                     placeholder="Enter Book Name"
+                    required
                     value={bookName}
                     onChange={(e) => setBookName(e.target.value)}
                   />
@@ -892,6 +909,7 @@ const ShowBooks = () => {
                     id="name"
                     type="text"
                     placeholder="Enter Book Category"
+                    required
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                   />
@@ -946,6 +964,7 @@ const ShowBooks = () => {
                     id="name"
                     type="text"
                     placeholder="Enter Book Id"
+                    required
                     value={bookId}
                     onChange={(e) => setBookId(e.target.value)}
                   />
@@ -1002,6 +1021,7 @@ const ShowBooks = () => {
                     id="name"
                     type="text"
                     placeholder="Enter Book Name"
+                    required
                     value={bookId}
                     onChange={(e) => setBookId(e.target.value)}
                   />
@@ -1056,6 +1076,7 @@ const ShowBooks = () => {
                     id="name"
                     type="text"
                     placeholder="Enter Book Name"
+                    required
                     value={bookName}
                     onChange={(e) => setBookName(e.target.value)}
                   />
@@ -1112,6 +1133,7 @@ const ShowBooks = () => {
                     id="name"
                     type="text"
                     placeholder="Enter Book Name"
+                    required
                     value={bookName}
                     onChange={(e) => setBookName(e.target.value)}
                   />
@@ -1129,6 +1151,7 @@ const ShowBooks = () => {
                     id="name"
                     type="text"
                     placeholder="Enter Book Author"
+                    required
                     value={authorName}
                     onChange={(e) => setAuthorName(e.target.value)}
                   />
